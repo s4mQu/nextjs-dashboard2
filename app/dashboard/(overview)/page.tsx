@@ -1,21 +1,24 @@
 // this is a server component, also a main component for the dashboard page
-import { Card } from '@/app/ui/dashboard/cards';
+import CardWrapper from '@/app/ui/dashboard/cards';
 import RevenueChart from '@/app/ui/dashboard/revenue-chart';
 import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
 // remenber if in brackets, it means that it is a named export, if not, it is a default export
 import { lusitana } from '@/app/ui/fonts';
+import { fetchCardData } from '@/app/lib/data';
+import { Suspense } from 'react';
 import {
-  fetchRevenue,
-  fetchLatestInvoices,
-  fetchCardData,
-} from '@/app/lib/data';
+  RevenueChartSkeleton,
+  LatestInvoicesSkeleton,
+  CardsSkeleton,
+} from '@/app/ui/skeletons';
 
 // the entire page is an async component..?? we can do that with nextJS. So we can fetch data before rendering the page
 export default async function Page() {
   // we are fetching the revenue data from the data file, from where is calls the database.
   // we are then storing that response to a const called revenue.
-  const revenue = await fetchRevenue();
-  const latestInvoices = await fetchLatestInvoices();
+  // const revenue = await fetchRevenue(); // this is commented out because we are not using it in the page at the moment.
+
+  // const latestInvoices = await fetchLatestInvoices();
   // from fetchCardData, we are getting the number of invoices, customers, total paid invoices and total pending invoices from the returned object. now we can use this information to display on the cards.
   const {
     numberOfInvoices,
@@ -31,18 +34,17 @@ export default async function Page() {
         Dashboard
       </h1>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Card title="Collected" value={totalPaidInvoices} type="collected" />
-        <Card title="Pending" value={totalPendingInvoices} type="pending" />
-        <Card title="Total Invoices" value={numberOfInvoices} type="invoices" />
-        <Card
-          title="Total Customers"
-          value={numberOfCustomers}
-          type="customers"
-        />
+        <Suspense fallback={<CardsSkeleton />}>
+          <CardWrapper />
+        </Suspense>
       </div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        <RevenueChart revenue={revenue} />
-        <LatestInvoices latestInvoices={latestInvoices} />
+        <Suspense fallback={<RevenueChartSkeleton />}>
+          <RevenueChart />
+        </Suspense>
+        <Suspense fallback={<LatestInvoicesSkeleton />}>
+          <LatestInvoices />
+        </Suspense>
       </div>
     </main>
   );
