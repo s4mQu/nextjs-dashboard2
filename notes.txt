@@ -1,0 +1,8 @@
+Here are the steps you'll take to create a new invoice:
+
+Create a form to capture the user's input.
+Create a Server Action and invoke it from the form.
+Inside your Server Action, extract the data from the formData object.
+Validate and prepare the data to be inserted into your database.
+Insert the data and handle any errors.
+Revalidate the cache and redirect the user back to invoices page.
